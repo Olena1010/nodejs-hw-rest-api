@@ -2,9 +2,29 @@ const Contact = require("../models/contact");
 
 const { HttpError, ctrlWrapper } = require('../helpers');
 
-const getAllContacts = async (_, res) => {
-	const result = await Contact.find();
-	res.json(result);
+const getAllContacts = async (req, res) => {
+	const { _id: owner } = req.user;
+	const { favorite } = req.query;
+	const { page = 1, limit = 10 } = req.query;
+	const skip = (page - 1) * limit;
+	
+	if (favorite) {
+    if (favorite !== "true" && favorite !== "false") {
+      throw HttpError(404, "Favorite value can only be true or false");
+    }
+    const result = await Contact.find(
+      { owner, favorite },
+      "name email phone favorite",
+      { skip, limit }
+    ).populate("owner", "email subscription");
+    res.json(result);
+  } else {
+    const result = await Contact.find({ owner }, "name email phone favorite", {
+      skip,
+      limit,
+    }).populate("owner", "email subscription");
+    res.json(result);
+  }
 };
 
 const getContactsById = async (req, res) => {
@@ -17,8 +37,9 @@ const getContactsById = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-	const result = await Contact.create(req.body);
-	res.status(201).json(result);
+	const { _id: owner } = req.user;
+	const result = await Contact.create({ ...req.body, owner });
+	res.status(201).json(result); 
 };
 
 const deleteContactById = async (req, res) => {
