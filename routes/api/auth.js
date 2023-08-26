@@ -6,7 +6,7 @@ const { validateBody, authenticate } = require('../../middlewares');
 
 const { schemas } = require("../../models/user");
 const { ctrlWrapper } = require("../../helpers");
-const { updateStatus } = require("../../schemas/contacts")
+const { updateSubscribeSchema } = require("../../schemas/contacts")
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.post("/logout", authenticate, ctrl.logout);
 router.patch(
   "/",
   authenticate,
-  validateBody(updateStatus),
+  validateBody(updateSubscribeSchema),
   ctrl.changeSubscription,
 );
 
