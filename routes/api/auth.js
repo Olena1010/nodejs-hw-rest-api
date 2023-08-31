@@ -19,7 +19,7 @@ router.patch(
   "/",
   authenticate,
   validateBody(updateSubscribeSchema),
-  ctrl.changeSubscription,
+  ctrl.changeSubscription, 
 );
 router.patch(
   "/avatars",
